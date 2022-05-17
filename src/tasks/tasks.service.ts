@@ -10,9 +10,10 @@ export class TasksService {
         return this.tasks;
     }
 
-    postTask(task: Task): Task {
+    postTask(task: Task): (Task | null) {
         
         this.tasks.push(task);
-        return task;
+        const find = this.tasks.find(t => t.title === task.title && t.description === task.description && t.status === task.status);
+        return (find !== task ? null: task);
     }
 }

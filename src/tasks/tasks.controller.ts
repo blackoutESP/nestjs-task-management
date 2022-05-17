@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Response } from '@nestjs/common';
+import { Controller, Delete, Get, Patch, Post, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { Task, TaskStatus } from './task.interface';
 import { TasksService } from './tasks.service';
 import { v4 } from 'uuid';
@@ -15,17 +16,28 @@ export class TasksController {
         return this.tasksService.getAllTasks();
     }
 
+    /*
+    @Body(key?: string)
+    req.body / req.body[key]
+    */
     @Post()
-    postTask(title: string, description: string): Task {
-        let taskId = 0;
-        console.log(title);
-        console.log(description);
+    postTask(@Req() request: Request, @Res() response: Response, title: string, description: string, status: TaskStatus): Response {
         const task: Task = {
             id: v4(),
-            title: title,
-            description: description,
-            status: TaskStatus.IN_PROGRESS
+            title: request.body.title,
+            description: request.body.description,
+            status: request.body.status
         };
-        return this.tasksService.postTask(task);
+        return this.tasksService.postTask(task) ? response.status(201).json({ok: true}) : response.status(200).json({ok: false});
+    }
+
+    @Patch()
+    updateTask(title: string, description: string, status: TaskStatus): Task {
+        return ;
+    }
+
+    @Delete()
+    deleteTask(): boolean {
+        return true;
     }
 }
