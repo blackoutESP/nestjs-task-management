@@ -9,13 +9,12 @@ export class TasksService {
     private tasks: TaskDto[] = [];
 
     get(filter?: GetTasksFilterDto): TaskDto[] {
-        const { status, search } = filter;
         if (!filter) {
             return this.tasks;
-        } else if (status) {
+        } else if (filter.status) {
             return this.tasks.filter(t => t.status === filter.status);
-        } else if (search) {
-            return this.tasks.filter(t => t.title.includes(search) || t.description.includes(search) || t.status.includes(search) ? true : false);
+        } else if (filter.search) {
+            return this.tasks.filter(t => t.title.includes(filter.search) || t.description.includes(filter.search) || t.status.includes(filter.search) ? true : false);
         }
     }
 

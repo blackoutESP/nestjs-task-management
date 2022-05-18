@@ -3,11 +3,12 @@ import { Request, Response } from 'express';
 import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
 import { TaskDto, TaskStatus } from './dto/task-dto';
 import { TasksService } from './tasks.service';
+import { TasksLogger } from '../logger/logger';
 
 @Controller('tasks')
 export class TasksController {
 
-    constructor(private tasksService: TasksService) {
+    constructor(private tasksService: TasksService, private tasksLogger: TasksLogger) {
 
     }
 
@@ -15,13 +16,19 @@ export class TasksController {
     getTasks(@Res() response: Response, @Query() filter?: GetTasksFilterDto): Response<TaskDto[]> {
         if (filter.status) {
             const filtered: TaskDto[] = this.tasksService.get(filter);
-            return response.status(200).json({ok: true, data: filtered, error: []});
+            const controllerResponse = response.status(200).json({ok: true, data: filtered, error: []});
+            this.tasksLogger.log(controllerResponse);
+            return controllerResponse;
         } else if (filter.search) {
             const search: TaskDto[] = this.tasksService.get(filter);
-            return response.status(200).json({ok: true, data: [search], error: []});
+            const controllerResponse = response.status(200).json({ok: true, data: [search], error: []});
+            this.tasksLogger.log(controllerResponse);
+            return controllerResponse;
         } else {
             const tasks = this.tasksService.get();
-            return response.status(200).json({ok: true, data: [tasks], error: []});
+            const controllerResponse = response.status(200).json({ok: true, data: [tasks], error: []});
+            this.tasksLogger.log(`${controllerResponse.statusCode} ${controllerResponse.statusMessage} ${controllerResponse.req.method} ${controllerResponse.req.url}`);
+            return controllerResponse;
         }
     }
 

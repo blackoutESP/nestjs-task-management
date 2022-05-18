@@ -9,54 +9,24 @@ export class TasksLogger implements LoggerService {
   private errorLog = fs.createWriteStream(path.resolve(__dirname, '../logs/error.log'), { encoding: 'utf-8', flags: 'a+' });
   private warnLog = fs.createWriteStream(path.resolve(__dirname, '../logs/warn.log'), { encoding: 'utf-8', flags: 'a+' });
   private debugLog = fs.createWriteStream(path.resolve(__dirname, '../logs/debug.log'), { encoding: 'utf-8', flags: 'a+' });
+  
   private logger = new BunyanLoggerService({
-    projectId: 'japjdklsk',
+    projectId: 'nestjs task manager',
     formatterOptions: {
       outputMode: 'long'
     },
     extraFields: {
-      environment:'development',
+      environment:'production',
       microservice: 'tasks',
     },
     customStreams: [
       {
-        level: 'trace',
+        level: 'info',
         stream: this.accessLog
-      },
-      {
-          level: 'error',
-          stream: this.errorLog
-      },
-      {
-        level: 'warn',
-        stream: this.warnLog
-      },
-      {
-        level: 'debug',
-        stream: this.debugLog
       }
     ]
   });
-  /*
-  streams: [
-      {
-          level: 'trace',
-          stream: this.accessLog
-      },
-      {
-          level: 'error',
-          stream: this.errorLog
-      },
-      {
-        level: 'warn',
-        stream: this.warnLog
-      },
-      {
-        level: 'debug',
-        stream: this.debugLog
-      }
-    ]
-  */
+  
   constructor() {
     
   }
