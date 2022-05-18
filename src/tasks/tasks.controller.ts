@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Patch, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Task, TaskStatus } from './task.interface';
+import { TaskDto } from './task-dto';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
@@ -21,7 +21,7 @@ export class TasksController {
     req.body / req.body[key]
     */
     @Post()
-    postTask(@Req() request: Request, @Res() response: Response, @Body() body: Task): Response {
+    postTask(@Req() request: Request, @Res() response: Response, @Body() body: TaskDto): Response {
         const serviceResponse = this.tasksService.post(body);
         const errorMessage = serviceResponse === null ? 'Task already exists...': '';
         return serviceResponse !== null ? 
@@ -30,7 +30,7 @@ export class TasksController {
     }
 
     @Patch('/:id')
-    updateTask(@Req() request: Request, @Res() response: Response, @Body() body: Task): Response<Task> {
+    updateTask(@Req() request: Request, @Res() response: Response, @Body() body: TaskDto): Response<TaskDto> {
         const serviceResponse = this.tasksService.patch(body);
         const errorMessage = serviceResponse === null ? 'Entity equal to request.body, not updated.': '';
         return serviceResponse !== null ? 
