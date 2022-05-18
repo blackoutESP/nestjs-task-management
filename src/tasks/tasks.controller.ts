@@ -11,8 +11,8 @@ export class TasksController {
     }
 
     @Get()
-    getAllTasks(@Res() response: Response): any {
-        const tasks = this.tasksService.getAllTasks();
+    getTasks(@Res() response: Response): any {
+        const tasks = this.tasksService.get();
         return response.status(200).json({ok: true, data: [tasks]});
     }
 
@@ -22,14 +22,20 @@ export class TasksController {
     */
     @Post()
     postTask(@Req() request: Request, @Res() response: Response, @Body() body): Response {
-        const serviceResponse = this.tasksService.postTask(body);
+        const serviceResponse = this.tasksService.post(body);
         const errorMessage = serviceResponse === null ? 'Task already exists...': '';
-        return serviceResponse !== null ? response.status(201).json({ok: true, data: [serviceResponse]}) : response.status(200).json({ok: false, data: [], error: [errorMessage]});
+        return serviceResponse !== null ? 
+                response.status(201).json({ok: true, data: [serviceResponse]}) : 
+                response.status(200).json({ok: false, data: [], error: [errorMessage]});
     }
 
-    @Patch()
-    updateTask(title: string, description: string, status: TaskStatus): Task {
-        return ;
+    @Patch('/:id')
+    updateTask(@Res() response: Response, @Body() body): Response<Task> {
+        const serviceResponse = this.tasksService.patch(body);
+        const errorMessage = serviceResponse === null ? 'HTTP Patch Error.': '';
+        return serviceResponse !== null ? 
+                response.status(200).json({ok: true, data: [serviceResponse], error: []}) : 
+                response.status(200).json({ok: false, data: [], error: [errorMessage]});
     }
 
     @Delete()
