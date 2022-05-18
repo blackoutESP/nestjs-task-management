@@ -30,7 +30,7 @@ export class TasksController {
     }
 
     @Patch('/:id')
-    updateTask(@Res() response: Response, @Body() body: Task): Response<Task> {
+    updateTask(@Req() request: Request, @Res() response: Response, @Body() body: Task): Response<Task> {
         const serviceResponse = this.tasksService.patch(body);
         const errorMessage = serviceResponse === null ? 'Entity equal to request.body, not updated.': '';
         return serviceResponse !== null ? 
