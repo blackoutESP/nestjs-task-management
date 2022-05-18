@@ -11,15 +11,6 @@ export class TasksService {
         return this.tasks;
     }
 
-    getById(id: string): (Task | null) {
-        const task = this.tasks.find(t => t.id === id);
-        if (task) {
-            return task;
-        } else {
-            return null;
-        }
-    }
-
     post(body: Task): (Task | null) {
         const originalLength = this.tasks.length;
         let newLength = 0;
@@ -29,7 +20,7 @@ export class TasksService {
             description: '',
             status: ''
         };
-        const found = this.tasks.some(t => t.title === body.title && t.description === body.description && t.status === body.status);
+        const found = this.tasks.some(t => t.id === body.id && t.title === body.title && t.description === body.description && t.status === body.status);
         if (!found) {
             const task: Task = {
                 id: String(v4()),
@@ -44,12 +35,28 @@ export class TasksService {
     }
 
     patch(body: Task): (Task | null) {
-        const task = this.getById(body.id);
-        if (task.title !== body.title || task.description !== body.description || task.status !== body.status) {
+        const notFound = this.tasks.some(t => t.id === body.id && t.title === body.title && t.description === body.description && t.status === body.status);
+        if (!notFound) {
             const index = this.tasks.findIndex(t => t.id === body.id);
             this.tasks[index] = body;
-            return body !== this.tasks[index] ? body : null;
+            return body;
         }
         return null;
+    }
+
+    delete(id: string): (Task[] | boolean) {
+        const task = this.tasks.find(t => t.id === id);
+        if (task) {
+            const index = this.tasks.findIndex(t => t.id === id);
+            if (index > 0 || index < this.tasks.length) {
+                return this.tasks = this.tasks.slice(0, index).concat(this.tasks.slice(index + 1, this.tasks.length));
+            } else if (index === this.tasks.length - 1) {
+                return this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+            } else {
+                return this.tasks = this.tasks.slice(1, this.tasks.length);
+            }
+        } else {
+            return false;
+        }
     }
 }

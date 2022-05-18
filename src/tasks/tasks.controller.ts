@@ -21,25 +21,29 @@ export class TasksController {
     req.body / req.body[key]
     */
     @Post()
-    postTask(@Req() request: Request, @Res() response: Response, @Body() body): Response {
+    postTask(@Req() request: Request, @Res() response: Response, @Body() body: Task): Response {
         const serviceResponse = this.tasksService.post(body);
         const errorMessage = serviceResponse === null ? 'Task already exists...': '';
         return serviceResponse !== null ? 
-                response.status(201).json({ok: true, data: [serviceResponse]}) : 
+                response.status(201).json({ok: true, data: [serviceResponse], error: []}) : 
                 response.status(200).json({ok: false, data: [], error: [errorMessage]});
     }
 
     @Patch('/:id')
-    updateTask(@Res() response: Response, @Body() body): Response<Task> {
+    updateTask(@Res() response: Response, @Body() body: Task): Response<Task> {
         const serviceResponse = this.tasksService.patch(body);
-        const errorMessage = serviceResponse === null ? 'HTTP Patch Error.': '';
+        const errorMessage = serviceResponse === null ? 'Entity equal to request.body, not updated.': '';
         return serviceResponse !== null ? 
                 response.status(200).json({ok: true, data: [serviceResponse], error: []}) : 
                 response.status(200).json({ok: false, data: [], error: [errorMessage]});
     }
 
-    @Delete()
-    deleteTask(): boolean {
-        return true;
+    @Delete('/:id')
+    deleteTask(@Req() request: Request, @Res() response: Response): Response {
+        const serviceResponse = this.tasksService.delete(request.params.id);
+        const errorMessage = serviceResponse === false ? 'Entity not deleted.': '';
+        return serviceResponse !== false ? 
+                response.status(200).json({ok: true, data: [serviceResponse], error: []}) :
+                response.status(200).json({ok: false, data: [], error: [errorMessage]});
     }
 }
