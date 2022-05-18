@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Patch, Post, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { TaskDto } from './task-dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from '@nestjs/common';
+import { Request, response, Response } from 'express';
+import { GetTasksFilterDto } from './get-tasks-filter-dto';
+import { TaskDto, TaskStatus } from './task-dto';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
@@ -11,9 +12,17 @@ export class TasksController {
     }
 
     @Get()
-    getTasks(@Res() response: Response): any {
-        const tasks = this.tasksService.get();
-        return response.status(200).json({ok: true, data: [tasks]});
+    getTasks(@Res() response: Response, @Query() filter?: GetTasksFilterDto): Response<TaskDto[]> {
+        if (filter.status) {
+            const filtered: TaskDto[] = this.tasksService.get(filter);
+            return response.status(200).json({ok: true, data: filtered, error: []});
+        } else if (filter.search) {
+            const search: TaskDto[] = this.tasksService.get(filter);
+            return response.status(200).json({ok: true, data: [search], error: []});
+        } else {
+            const tasks = this.tasksService.get();
+            return response.status(200).json({ok: true, data: [tasks], error: []});
+        }
     }
 
     /*
@@ -38,9 +47,15 @@ export class TasksController {
                 response.status(200).json({ok: false, data: [], error: [errorMessage]});
     }
 
+    @Patch('/:id/status')
+    updateTaskStatus(@Res() response: Response, @Param('id') id: number, @Body('status') status: TaskStatus): Response<TaskDto> {
+        const serviceResponse = this.tasksService.patchStatus(id, status);
+        return response.status(200).json({ok: true, data: [serviceResponse]});
+    }
+
     @Delete('/:id')
     deleteTask(@Req() request: Request, @Res() response: Response): Response {
-        const serviceResponse = this.tasksService.delete(request.params.id);
+        const serviceResponse = this.tasksService.delete(Number(request.params.id));
         const errorMessage = serviceResponse === false ? 'Entity not deleted.': '';
         return serviceResponse !== false ? 
                 response.status(200).json({ok: true, data: [serviceResponse], error: []}) :
