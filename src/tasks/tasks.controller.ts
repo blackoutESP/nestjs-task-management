@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from '@nestjs/common';
 import { Request, response, Response } from 'express';
-import { GetTasksFilterDto } from './get-tasks-filter-dto';
-import { TaskDto, TaskStatus } from './task-dto';
+import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
+import { TaskDto, TaskStatus } from './dto/task-dto';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
